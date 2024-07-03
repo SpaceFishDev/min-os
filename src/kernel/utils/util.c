@@ -9,3 +9,23 @@ size_t strlen(const char *str)
     }
     return len;
 }
+
+unsigned char inb(unsigned short port)
+{
+    unsigned char ret;
+    asm volatile("in %%dx, %%al" : "=a"(ret) : "d"(port) : "memory");
+    return ret;
+}
+
+void outb(unsigned char value, unsigned short port)
+{
+    asm volatile("out %%al, %%dx" : : "a"(value), "d"(port) : "memory");
+}
+
+void memset(char *dat, char ch, size_t sz)
+{
+    for (size_t i = 0; i < sz; ++i)
+    {
+        dat[i] = ch;
+    }
+}

@@ -8,5 +8,13 @@ typedef char int8;
 typedef short int16;
 typedef int int32;
 
+typedef char bool;
+#define true 1
+#define false 0
+
 size_t strlen(const char *str);
+unsigned char inb(unsigned short port);
+void outb(unsigned char value, unsigned short port);
+void memset(char *, char ch, size_t);
+
 #endif
