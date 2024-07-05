@@ -20,9 +20,10 @@ stack_top:
 .global _start
 .type _start, @function
 _start:
-    mov $stack_top, %esp
+    movl $stack_top, %esp
+    sti
+    pushl %ebx
     call kernel_main
-    cli
 1:	hlt
 	jmp 1b
 

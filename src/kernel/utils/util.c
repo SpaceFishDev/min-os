@@ -22,10 +22,10 @@ void outb(unsigned char value, unsigned short port)
     asm volatile("out %%al, %%dx" : : "a"(value), "d"(port) : "memory");
 }
 
-void memset(char *dat, char ch, size_t sz)
+void memset(void *dat, char ch, size_t sz)
 {
     for (size_t i = 0; i < sz; ++i)
     {
-        dat[i] = ch;
+        ((char *)dat)[i] = ch;
     }
 }

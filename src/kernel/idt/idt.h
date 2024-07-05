@@ -33,9 +33,6 @@ typedef struct registers
     uint32 eip, cs, eflags, useresp, ss;           // Pushed by the processor automatically.
 } registers_t;
 
-// This intentionally accepts a *COPY* of the registers.
-// It's slower, but it prevents service routines from messing with them.
-// Maybe messing with them is useful, and we'll change this later.
 typedef void (*isr_handler_t)(registers_t);
 void register_interrupt_handler(uint8 interrupt, isr_handler_t handler);
 

@@ -1,20 +1,18 @@
 [bits 32]
+
+section .text
 global load_gdt
-gdtr    dw 0
-        dd 0
 
 load_gdt:
-    mov eax, DWORD [esp + 4]
-    lgdt [eax]
-    call reloadSegments
+    mov     eax, DWORD [esp + 4]
+    lgdt    [eax]
+
+    mov     ax, 10h
+    mov     ds, ax
+    mov     es, ax
+    mov     fs, ax
+    mov     gs, ax
+    mov     ss, ax
+    jmp    08h:flush
+flush:
     ret
-reloadSegments:
-   jmp   0x08:.reload_CS 
-.reload_CS:
-   mov   ax, 0x10 
-   mov   ds, ax
-   mov   es, ax
-   mov   fs, ax
-   mov   gs, ax
-   mov   ss, ax
-   ret

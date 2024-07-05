@@ -73,7 +73,7 @@ isr_stub:
     mov 	fs, ax
     mov 	gs, ax
 
-    call	isr_handler
+    call isr_handler 
 
     pop	    eax
     mov		eax, esi

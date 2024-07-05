@@ -1,5 +1,6 @@
 #include "idt.h"
 #include "../utils/debug/debug.h"
+#include "../pic/pic.h"
 struct idt_entry_struct
 {
     uint16 base_lo; // The lower 16 bits of the address to jump to when this interrupt fires.
@@ -54,7 +55,8 @@ extern void isr30();
 extern void isr31();
 
 // IRQ Handlers
-extern void irq0();
+extern void
+irq0();
 extern void irq1();
 extern void irq2();
 extern void irq3();
@@ -79,6 +81,7 @@ idt_ptr_t idt_ptr;
 
 void init_idt()
 {
+    debug_terminal_writestring("Initializing IDT\n");
     idt_ptr.limit = sizeof(idt_entry_t) * 256 - 1;
     idt_ptr.base = (uint32)&idt_entries;
 
@@ -135,6 +138,7 @@ void init_idt()
     idt_set_gate(46, (uint32)irq14, 0x08, 0x8E);
     idt_set_gate(47, (uint32)irq15, 0x08, 0x8E);
 
+    debug_terminal_writestring("Loading IDT.\n");
     load_idt(&idt_ptr);
 }
 
@@ -154,23 +158,28 @@ isr_handler_t interrupt_handlers[256];
 
 void register_interrupt_handler(uint8 interrupt, isr_handler_t handler)
 {
+    debug_terminal_writestring("Registering interrupt!");
     interrupt_handlers[interrupt] = handler;
 }
 
 void isr_handler(registers_t regs)
 {
-    if (regs.int_no == GENERAL_PROTECTION_FAULT)
-    {
-        debug_terminal_writestring("GENERAL PROTECTION FAULT");
-    }
 
-    if (interrupt_handlers[regs.int_no])
-    {
-        interrupt_handlers[regs.int_no](regs);
-    }
+    debug_terminal_writestring("ISR: ");
+    debug_terminal_print_num(regs.int_no);
+    debug_terminal_writestring("\n");
+    debug_terminal_writestring("ERR: ");
+    debug_terminal_print_num(regs.err_code);
+    debug_terminal_writestring("\n");
+    outb(0x20, 0x20);
+    while (1)
+        ;
 }
 
 void irq_handler(registers_t regs)
 {
-    // debug_terminal_writestring("hello, world 2");
+    debug_terminal_writestring("IRQ: ");
+    debug_terminal_print_num(regs.int_no);
+    debug_terminal_writestring("\n");
+    PIC_sendEOI(regs.int_no);
 }

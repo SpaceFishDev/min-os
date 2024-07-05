@@ -25,6 +25,7 @@ gdt_ptr_t gdt_ptr;
 
 void init_gdt()
 {
+    debug_terminal_writestring("Initializing GDT\n");
     gdt_ptr.limit = (sizeof(gdt_entry_t) * 5) - 1;
     gdt_ptr.base = (uint32)&gdt_entries;
     gdt_set_gate(0, 0, 0, 0, 0);

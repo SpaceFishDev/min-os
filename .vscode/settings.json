@@ -3,6 +3,7 @@
         "util.h": "c",
         "debug.h": "c",
         "gdt.h": "c",
-        "idt.h": "c"
+        "idt.h": "c",
+        "pit.h": "c"
     }
 }

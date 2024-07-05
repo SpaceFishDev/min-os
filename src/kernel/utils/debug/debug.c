@@ -36,13 +36,19 @@ void debug_terminal_putentryat(char c, uint8 color, size_t x, size_t y)
 
 void debug_terminal_putchar(char c)
 {
-    debug_terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
-    if (++terminal_column == VGA_WIDTH)
+    if (c != '\n')
     {
-        terminal_column = 0;
-        if (++terminal_row == VGA_HEIGHT)
-            terminal_row = 0;
+        debug_terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
+        if (++terminal_column == VGA_WIDTH)
+        {
+            terminal_column = 0;
+            if (++terminal_row == VGA_HEIGHT)
+                terminal_row = 0;
+        }
+        return;
     }
+    ++terminal_row;
+    terminal_column = 0;
 }
 
 void debug_terminal_write(const char *data, size_t size)
@@ -54,4 +60,14 @@ void debug_terminal_write(const char *data, size_t size)
 void debug_terminal_writestring(const char *data)
 {
     debug_terminal_write(data, strlen(data));
+}
+
+void debug_terminal_print_num(int x)
+{
+    while (x > 0)
+    {
+        int mod = x % 10;
+        debug_terminal_putchar(((char)mod) + '0');
+        x = x / 10;
+    }
 }

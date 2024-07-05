@@ -15,6 +15,13 @@ typedef char bool;
 size_t strlen(const char *str);
 unsigned char inb(unsigned short port);
 void outb(unsigned char value, unsigned short port);
-void memset(char *, char ch, size_t);
-
+void memset(void *, char ch, size_t);
+__attribute__((__always_inline__, __artificial__, __unused__)) __inline__ static void x86_cli(void)
+{
+    __asm__ __volatile__("cli" ::: "memory", "cc");
+}
+__attribute__((__always_inline__, __artificial__, __unused__)) __inline__ static void x86_sti(void)
+{
+    __asm__ __volatile__("sti" ::: "memory", "cc");
+}
 #endif

@@ -35,4 +35,5 @@ void debug_terminal_putentryat(char c, uint8 color, size_t x, size_t y);
 void debug_terminal_putchar(char c);
 void debug_terminal_write(const char *data, size_t size);
 void debug_terminal_writestring(const char *data);
+void debug_terminal_print_num(int x);
 #endif

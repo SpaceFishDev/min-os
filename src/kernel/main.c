@@ -2,19 +2,16 @@
 #include "utils/debug/debug.h"
 #include "gdt/gdt.h"
 #include "idt/idt.h"
-
-static void i0(registers_t reg)
-{
-    debug_terminal_writestring("BALLS");
-}
+#include "pit/pit.h"
+#include "pic/pic.h"
 
 void kernel_main(void)
 {
-    init_gdt();
-    init_idt();
     debug_terminal_initialize();
-    debug_terminal_writestring("Hello, World!");
-
+    init_gdt();
+    remap_pic();
+    init_idt();
+    init_timer(1, 0);
     while (1)
         ;
 }
