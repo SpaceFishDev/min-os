@@ -158,22 +158,29 @@ isr_handler_t interrupt_handlers[256];
 
 void register_interrupt_handler(uint8 interrupt, isr_handler_t handler)
 {
-    debug_terminal_writestring("Registering interrupt!");
+    debug_terminal_writestring("Registering interrupt!\n");
     interrupt_handlers[interrupt] = handler;
 }
 
 void isr_handler(registers_t regs)
 {
-
-    debug_terminal_writestring("ISR: ");
-    debug_terminal_print_num(regs.int_no);
-    debug_terminal_writestring("\n");
-    debug_terminal_writestring("ERR: ");
-    debug_terminal_print_num(regs.err_code);
-    debug_terminal_writestring("\n");
-    outb(0x20, 0x20);
-    while (1)
-        ;
+    if (regs.int_no == GENERAL_PROTECTION_FAULT)
+    {
+        debug_terminal_writestring("ISR: ");
+        debug_terminal_print_num(regs.int_no);
+        debug_terminal_writestring("\n");
+        debug_terminal_writestring("ERR: ");
+        debug_terminal_print_num(regs.err_code);
+        debug_terminal_writestring("\n");
+        asm("cli");
+        while (1)
+            ;
+    }
+    if (interrupt_handlers[regs.int_no])
+    {
+        interrupt_handlers[regs.int_no](regs);
+    }
+    PIC_sendEOI(regs.int_no);
 }
 
 void irq_handler(registers_t regs)
@@ -181,5 +188,9 @@ void irq_handler(registers_t regs)
     debug_terminal_writestring("IRQ: ");
     debug_terminal_print_num(regs.int_no);
     debug_terminal_writestring("\n");
+    if (interrupt_handlers[regs.int_no])
+    {
+        interrupt_handlers[regs.int_no](regs);
+    }
     PIC_sendEOI(regs.int_no);
 }

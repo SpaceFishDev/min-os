@@ -17,9 +17,11 @@ unsigned char inb(unsigned short port)
     return ret;
 }
 
-void outb(unsigned char value, unsigned short port)
+void outb(uint16 port, uint8 data)
 {
-    asm volatile("out %%al, %%dx" : : "a"(value), "d"(port) : "memory");
+    asm volatile("outb %0, %1"
+                 :
+                 : "a"(data), "d"(port));
 }
 
 void memset(void *dat, char ch, size_t sz)

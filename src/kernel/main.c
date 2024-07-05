@@ -11,7 +11,8 @@ void kernel_main(void)
     init_gdt();
     remap_pic();
     init_idt();
-    init_timer(1, 0);
+    init_timer(10, 0);
+    asm("sti");
     while (1)
         ;
 }

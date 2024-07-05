@@ -14,7 +14,7 @@ typedef char bool;
 
 size_t strlen(const char *str);
 unsigned char inb(unsigned short port);
-void outb(unsigned char value, unsigned short port);
+void outb(unsigned short port, uint8 data);
 void memset(void *, char ch, size_t);
 __attribute__((__always_inline__, __artificial__, __unused__)) __inline__ static void x86_cli(void)
 {

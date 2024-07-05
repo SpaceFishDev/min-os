@@ -7,7 +7,6 @@ load_idt:
     lidt   [eax]
     ret
 
-;; num %1
 %macro isr_noerr 1
 global isr%1
 isr%1:
@@ -72,7 +71,8 @@ isr_stub:
     mov 	es, ax
     mov 	fs, ax
     mov 	gs, ax
-
+    
+    ; jmp $
     call isr_handler 
 
     pop	    eax

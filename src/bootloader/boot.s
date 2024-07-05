@@ -21,7 +21,6 @@ stack_top:
 .type _start, @function
 _start:
     movl $stack_top, %esp
-    sti
     pushl %ebx
     call kernel_main
 1:	hlt
