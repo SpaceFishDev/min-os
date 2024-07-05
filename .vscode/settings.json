@@ -4,6 +4,7 @@
         "debug.h": "c",
         "gdt.h": "c",
         "idt.h": "c",
-        "pit.h": "c"
+        "pit.h": "c",
+        "paging.h": "c"
     }
 }

@@ -71,3 +71,12 @@ void debug_terminal_print_num(int x)
         x = x / 10;
     }
 }
+
+void PANIC(char *str)
+{
+    debug_terminal_writestring("PANIC: ");
+    debug_terminal_writestring(str);
+    debug_terminal_writestring("\n");
+    asm("cli");
+    asm("hlt");
+}

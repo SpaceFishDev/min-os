@@ -140,6 +140,7 @@ void init_idt()
 
     debug_terminal_writestring("Loading IDT.\n");
     load_idt(&idt_ptr);
+    asm("sti");
 }
 
 static void idt_set_gate(uint8 num, uint32 base, uint16 sel, uint8 flags)
@@ -180,14 +181,17 @@ void isr_handler(registers_t regs)
     {
         interrupt_handlers[regs.int_no](regs);
     }
+    else
+    {
+        debug_terminal_writestring("UNHANDLED INTERRUPT: ");
+        debug_terminal_print_num(regs.int_no);
+        debug_terminal_writestring("\n");
+    }
     PIC_sendEOI(regs.int_no);
 }
 
 void irq_handler(registers_t regs)
 {
-    debug_terminal_writestring("IRQ: ");
-    debug_terminal_print_num(regs.int_no);
-    debug_terminal_writestring("\n");
     if (interrupt_handlers[regs.int_no])
     {
         interrupt_handlers[regs.int_no](regs);
