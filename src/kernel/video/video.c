@@ -135,13 +135,6 @@ void swap_buffers()
     }
 }
 
-void draw()
-{
-    for (int i = 0; i < 64000; i++)
-    {
-        video_buffer[i] = BufferA[i];
-    }
-}
 int frame_no = 0;
 
 int timer_tick = 0;
@@ -154,7 +147,6 @@ int get_timer_tick()
 void vga_update()
 {
     clear_screen();
-    draw();
     ++timer_tick;
 }
 
