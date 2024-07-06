@@ -24,6 +24,13 @@ void outb(uint16 port, uint8 data)
                  : "a"(data), "d"(port));
 }
 
+void outw(uint16 port, uint16 data)
+{
+    asm volatile("outw %0, %1"
+                 :
+                 : "a"(data), "d"(port));
+}
+
 void memset(void *dat, char ch, size_t sz)
 {
     for (size_t i = 0; i < sz; ++i)

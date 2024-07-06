@@ -29,6 +29,9 @@
         "streambuf": "c",
         "tuple": "c",
         "type_traits": "c",
-        "shell.h": "c"
+        "shell.h": "c",
+        "keyboard.h": "c",
+        "heap.h": "c",
+        "video.h": "c"
     }
 }

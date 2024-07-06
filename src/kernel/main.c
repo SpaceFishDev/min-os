@@ -5,10 +5,10 @@
 #include "pit/pit.h"
 #include "pic/pic.h"
 #include "paging/paging.h"
-
 #include "heap/heap.h"
-
 #include "keyboard/keyboard.h"
+#include "shell/shell.h"
+#include "video/video.h"
 
 typedef struct
 {
@@ -52,7 +52,7 @@ void kernel_main(multiboot_info *mi)
     init_gdt();
     remap_pic();
     init_idt();
-    initialize_memory(total_frames, 0, 0);
+    initialize_memory(total_frames, 0xA0000, 64000);
     char *c = malloc(3);
     c[0] = 'h';
     c[1] = 'i';
@@ -62,6 +62,7 @@ void kernel_main(multiboot_info *mi)
     {
         debug_terminal_writestring("Keyboard initialized.\n");
     }
+    setup_video_mode(); // after this point debug terminal will not work
 
     while (1)
     {

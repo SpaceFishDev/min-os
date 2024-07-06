@@ -16,6 +16,7 @@ size_t strlen(const char *str);
 unsigned char inb(unsigned short port);
 void outb(unsigned short port, uint8 data);
 void memset(void *, char ch, size_t);
+void outw(uint16 port, uint16 data);
 __attribute__((__always_inline__, __artificial__, __unused__)) __inline__ static void x86_cli(void)
 {
     __asm__ __volatile__("cli" ::: "memory", "cc");
