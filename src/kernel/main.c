@@ -58,6 +58,10 @@ void kernel_main(multiboot_info *mi)
     c[1] = 'i';
     c[2] = 0;
     int kbd_success = init_keyboard();
+    if (kbd_success == 0)
+    {
+        debug_terminal_writestring("Keyboard initialized.\n");
+    }
 
     while (1)
     {

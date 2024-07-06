@@ -128,6 +128,7 @@ int init_keyboard()
     outb(0x64, 0x20);
     result = inb(0x60);
     register_interrupt_handler(IRQ1, keyboard_handler);
+    return 0;
 }
 bool left_shift_pressed()
 {

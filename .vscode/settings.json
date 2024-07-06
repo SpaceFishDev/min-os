@@ -28,6 +28,7 @@
         "sstream": "c",
         "streambuf": "c",
         "tuple": "c",
-        "type_traits": "c"
+        "type_traits": "c",
+        "shell.h": "c"
     }
 }
