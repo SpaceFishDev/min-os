@@ -6,6 +6,10 @@
 #include "pic/pic.h"
 #include "paging/paging.h"
 
+#include "heap/heap.h"
+
+#include "keyboard/keyboard.h"
+
 typedef struct
 {
     unsigned long tab_size;
@@ -38,12 +42,29 @@ typedef struct multiboot_info
     unsigned long mmap_length;
     unsigned long mmap_addr;
 } multiboot_info;
-void kernel_main(void)
+void kernel_main(multiboot_info *mi)
 {
+    uint32 low_pages = 256;
+    uint32 high_pages = (mi->mem_upper * 1024) / 4096;
+
+    uint32 total_frames = high_pages + low_pages;
     debug_terminal_initialize();
     init_gdt();
     remap_pic();
     init_idt();
+    initialize_memory(total_frames, 0, 0);
+    char *c = malloc(3);
+    c[0] = 'h';
+    c[1] = 'i';
+    c[2] = 0;
+    int kbd_success = init_keyboard();
+
     while (1)
-        ;
+    {
+        char k = poll_keyboard();
+        if (k)
+        {
+            debug_terminal_putchar(k);
+        }
+    }
 }

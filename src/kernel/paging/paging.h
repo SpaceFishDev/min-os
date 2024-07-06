@@ -36,7 +36,7 @@ typedef struct
     uint32 physicalAddr;
 } page_directory;
 
-void initialize_paging(uint32 total_frames, uint32 ident_addr, uint32 ident_len);
+void initialize_memory(uint32 total_frames, uint32 ident_addr, uint32 ident_len);
 void switch_page_directory(page_directory *new);
 page *get_page(uint32 address, int make, page_directory *dir);
 

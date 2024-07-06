@@ -64,6 +64,11 @@ void debug_terminal_writestring(const char *data)
 
 void debug_terminal_print_num(int x)
 {
+    if (x == 0)
+    {
+        debug_terminal_putchar('0');
+        return;
+    }
     while (x > 0)
     {
         int mod = x % 10;

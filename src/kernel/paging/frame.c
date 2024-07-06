@@ -41,12 +41,8 @@ void alloc_frame(page *page, int is_kernel, int is_writeable)
     }
     else
     {
-        // Otherwise, there were no free frames on the stack.
-        // Grab one from the end of memory.
         if (end_of_mem >= total_frames)
         {
-            // There are no free frames in the frame stack
-            // and we're at the limit of our physical memory.
             PANIC("Cannot alloc frame. Out of memory!");
         }
         idx = end_of_mem;

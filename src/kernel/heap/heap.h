@@ -12,4 +12,8 @@ typedef struct heap_block
     char *ptr;
 } heap_block;
 
+char *malloc(uint32 sz);
+
+void free(char *ptr);
+
 #endif

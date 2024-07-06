@@ -7,8 +7,8 @@ char *baseptr;
 heap_block *block_dat;
 void init_heap(uint32 start_addr)
 {
-    block_dat = start_addr;
-    baseptr = start_addr + 0x1000;
+    block_dat = start_addr + 0x1000;
+    baseptr = start_addr + 0x2000;
     mem_end = (char *)baseptr;
     base = block_dat;
     base->size = mem_end - start_addr;
@@ -46,10 +46,27 @@ char *malloc(uint32 sz)
             create_new_block();
             block_dat[nblock - 1].size = sz;
             block_dat[nblock - 1].ptr = ptr;
+            block_dat[nblock - 1].free = false;
             return ptr;
         }
     }
-    return 0;
+    expand();
+    int ptr = mem_end;
+    create_new_block();
+    block_dat[nblock - 1].size = sz;
+    block_dat[nblock - 1].ptr = mem_end;
+    return block_dat[nblock - 1].ptr;
+}
+
+void free(char *ptr)
+{
+    for (int i = 0; i < nblock; ++i)
+    {
+        if (block_dat[i].ptr == ptr)
+        {
+            block_dat[i].free = true;
+        }
+    }
 }
 
 void expand()

@@ -83,7 +83,7 @@ page *get_page(uint32 address, int make, page_directory *dir)
 {
     address /= 0x1000;
     uint32 table_idx = address / 1024;
-    if (dir->tables[table_idx]) // If this table is already assigned
+    if (dir->tables[table_idx])
     {
         return &dir->tables[table_idx]->pages[address % 1024];
     }
@@ -103,15 +103,26 @@ page *get_page(uint32 address, int make, page_directory *dir)
         return 0;
     }
 }
+#include "../heap/heap.h"
 
-void initialize_paging(uint32 total_frames, uint32 ident_addr, uint32 ident_len)
+void switch_page_directory(page_directory *dir)
 {
-    debug_terminal_writestring("Allocating page tables.");
+    current_directory = dir;
+    asm volatile("mov %0, %%cr3" ::"r"(&dir->tablesPhysical));
+    uint32 cr0;
+    asm volatile("mov %%cr0, %0" : "=r"(cr0));
+    cr0 |= 0x80000000; // Enable paging!
+    asm volatile("mov %0, %%cr0" ::"r"(cr0));
+}
+
+void initialize_memory(uint32 total_frames, uint32 ident_addr, uint32 ident_len)
+{
+    debug_terminal_writestring("Allocating page tables.\n");
     init_frame_allocator(total_frames);
     kern_dir = (struct page_directory *)e_kmalloc_a(sizeof(page_directory));
     memset(kern_dir, 0, sizeof(page_directory));
     current_directory = kern_dir;
-    for (int i = 0; i < 0xFFFFFFFF;)
+    for (unsigned int i = 0; i < 0xFFFFFFFF;)
     {
         get_page(i, 1, kern_dir);
         i += 0x1000 * 1024;
@@ -139,6 +150,8 @@ void initialize_paging(uint32 total_frames, uint32 ident_addr, uint32 ident_len)
     }
     switch_page_directory(kern_dir);
     initialized = 1;
+    disable_early_kmalloc();
+    init_heap(heap_start);
 }
 
 page *map_kernel_page(uint32 address, int make)
