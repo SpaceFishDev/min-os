@@ -10,6 +10,8 @@
 #include "shell/shell.h"
 #include "video/video.h"
 
+#define TIMER_HZ 60
+
 typedef struct
 {
     unsigned long tab_size;
@@ -66,10 +68,8 @@ void kernel_main(multiboot_info *mi)
 
     while (1)
     {
-        char k = poll_keyboard();
-        if (k)
-        {
-            debug_terminal_putchar(k);
-        }
+        render_character('a', 100, 100, 15);
+        render_character('b', 200, 100, 15);
+        swap_buffers();
     }
 }

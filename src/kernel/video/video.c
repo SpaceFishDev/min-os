@@ -3,6 +3,7 @@
 #include "../utils/debug/debug.h"
 #include "../heap/heap.h"
 #include "../pit/pit.h"
+#include "../shell/font.h"
 uint8 *video_buffer = 0xA0000;
 
 #define VGA_AC_INDEX 0x3C0
@@ -115,7 +116,7 @@ void set_vga_mode_13h()
     inb(VGA_INSTAT_READ);
     outb(VGA_AC_INDEX, 0x20);
 }
-uint8 BufferA[64000];
+uint8 *BufferA;
 uint8 BufferB[64000];
 
 void clear_screen()
@@ -126,17 +127,11 @@ void clear_screen()
     }
 }
 
-uint8 temp[64000];
 void swap_buffers()
 {
     for (int i = 0; i < 64000; i++)
     {
-        temp[i] = BufferA[i];
-    }
-    for (int i = 0; i < 64000; i++)
-    {
         BufferA[i] = BufferB[i];
-        BufferB[i] = temp[i];
     }
 }
 
@@ -149,30 +144,52 @@ void draw()
 }
 int frame_no = 0;
 
+int timer_tick = 0;
+
+int get_timer_tick()
+{
+    return timer_tick;
+}
+
 void vga_update()
 {
     clear_screen();
-    if (frame_no % 2 == 0)
-    {
-        BufferB[32] = 15;
-    }
-    else
-    {
-        BufferB[32] = 1;
-    }
-    swap_buffers();
     draw();
-    ++frame_no;
+    ++timer_tick;
+}
+
+void put_pixel(int x, int y, uint8 color)
+{
+    BufferB[x + (y * 320)] = color;
+}
+
+void render_character(char c, int x_off, int y_off, char col)
+{
+    char *bitmap = get_font_bitmap(c);
+    int x, y;
+    int set;
+    int mask;
+    for (x = 0; x < 8; x++)
+    {
+        for (y = 0; y < 8; y++)
+        {
+            set = bitmap[y] & 1 << x;
+            if (set)
+            {
+                put_pixel(x + x_off, y + y_off, col);
+            }
+        }
+    }
 }
 
 void setup_video_mode()
 {
     set_vga_mode_13h();
     clear_screen();
-    init_timer(24, vga_update);
+    init_timer(60, vga_update);
+    BufferA = video_buffer;
     for (int i = 0; i < 64000; ++i)
     {
-        BufferA[i] = 0;
         BufferB[i] = 0;
     }
 }
