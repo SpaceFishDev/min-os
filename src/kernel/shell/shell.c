@@ -6,8 +6,8 @@
 #include "../std/stdio.h"
 char *screen_buffer;
 
-#define TXT_W ((VGA_W - 1) / 9)
-#define TXT_H (((VGA_H - 1) / 9) - 1)
+#define TXT_W ((VGA_W) / 9)
+#define TXT_H (((VGA_H) / 9) - 1)
 int terminal_col = 15;
 
 int cursor_x, cursor_y;
@@ -22,7 +22,7 @@ void init_shell()
     command_buffer = malloc(TXT_W);
     cursor_x = 2; // resets to 2 to allow for '> '
     cursor_y = 0;
-    screen_buffer = malloc(TXT_H * TXT_W);
+    screen_buffer = malloc(TXT_H * TXT_W * 8);
     for (int i = 0; i < TXT_H * TXT_W; ++i)
     {
         screen_buffer[i] = 0;
@@ -119,19 +119,49 @@ void shell_putc(char c)
         cursor_y++;
     }
 }
+int last_stdout_idx = 0;
+
+int shell_scroll = 0;
 
 void stdout_flush()
 {
+    bool printed = last_stdout_idx != 0 && (last_stdout_idx != stdout_index);
     for (int i = 0; i < stdout_index; ++i)
     {
         shell_putc(stdout[i]);
     }
+    last_stdout_idx = stdout_index;
     stdout_index = 0;
+    if (printed)
+    {
+        cursor_y++;
+        cursor_x = 0;
+        shell_putc('>');
+        shell_putc(' ');
+    }
+}
+
+void swap_lines(int y1, int y2)
+{
+    char buf[TXT_W];
+    for (int x = 0; x < TXT_W; ++x)
+    {
+        buf[x] = screen_buffer[x + (y1 * TXT_W)];
+    }
+    for (int x = 0; x < TXT_W; ++x)
+    {
+        screen_buffer[x + (y1 * TXT_W)] = screen_buffer[x + (y2 * TXT_W)];
+        screen_buffer[x + (y2 * TXT_W)] = buf[x];
+    }
 }
 
 void update_shell()
 {
     stdout_flush();
+    if (cursor_y > TXT_H)
+    {
+        cursor_y -= 2;
+    }
 }
 
 void render_shell()
@@ -142,7 +172,10 @@ void render_shell()
         {
             int vga_x = x * 9;
             int vga_y = (y * 9) + 9;
-            render_character(screen_buffer[x + (y * TXT_W)], vga_x, vga_y, terminal_col);
+            if (vga_y > 0)
+            {
+                render_character(screen_buffer[x + (y * TXT_W)], vga_x, vga_y, terminal_col);
+            }
         }
     }
 }

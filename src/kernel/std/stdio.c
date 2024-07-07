@@ -51,7 +51,7 @@ char *itoa(int x)
         while (x > 0)
         {
             int mod = x % 10;
-            str[idx] = (char)mod + '0';
+            str[idx++] = (char)mod + '0';
             x = x / 10;
         }
         return str;
@@ -64,7 +64,7 @@ char *itoa(int x)
         while (x > 0)
         {
             int mod = x % 10;
-            str[idx] = (char)mod + '0';
+            str[idx++] = (char)mod + '0';
             x = x / 10;
         }
         str[0] = '-';
