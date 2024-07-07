@@ -65,11 +65,16 @@ void kernel_main(multiboot_info *mi)
         debug_terminal_writestring("Keyboard initialized.\n");
     }
     setup_video_mode(); // after this point debug terminal will not work
-
+    init_shell();
+    int sync = get_timer_tick(); // make sure its synced with frame updates (I doubt this works but worth trying)
     while (1)
     {
-        render_character('a', 100, 100, 15);
-        render_character('b', 200, 100, 15);
-        swap_buffers();
+        int time_cur = get_timer_tick();
+        if (time_cur == sync + 1)
+        {
+            render_shell();
+            swap_buffers();
+            sync = time_cur;
+        }
     }
 }

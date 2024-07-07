@@ -32,6 +32,8 @@
         "shell.h": "c",
         "keyboard.h": "c",
         "heap.h": "c",
-        "video.h": "c"
+        "video.h": "c",
+        "stdarg.h": "c",
+        "stdio.h": "c"
     }
 }
