@@ -129,8 +129,12 @@ int printf(char *fmt, ...)
 {
     char *start = fmt;
     va_list ap;
-    va_start(ap, fmt);
+    int narg = 0;
     int len = 0;
+    int z = 0;
+
+    fmt = start;
+    va_start(ap, fmt);
     while (*fmt)
     {
         if (*fmt == '%')
@@ -173,6 +177,8 @@ int printf(char *fmt, ...)
     char *out = malloc(len);
     fmt = start;
     int idx = 0;
+    va_start(ap, fmt);
+
     while (*fmt)
     {
         if (*fmt == '%')
@@ -235,4 +241,5 @@ int printf(char *fmt, ...)
         stdout[stdout_index] = out[i];
         ++stdout_index;
     }
+    free(out);
 }

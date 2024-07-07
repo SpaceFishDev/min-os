@@ -62,7 +62,7 @@ void kernel_main(multiboot_info *mi)
     }
     setup_video_mode(); // after this point debug terminal will not work
     init_shell();
-    printf(ftoa(6));
+    printf("test: %s", "hi");
     int sync = get_timer_tick(); // make sure its synced with frame updates (I doubt this works but worth trying)
     while (1)
     {

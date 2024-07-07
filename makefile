@@ -1,5 +1,5 @@
 KERN_OBJS := $(patsubst %.c,%.o,$(wildcard src/kernel/*.c src/kernel/*/*.c src/kernel/*/*/*.c))
-CFLAGS =  -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+CFLAGS =   -ffreestanding -O2 -Wall -Wextra
 KERN_ASM_OBJS := $(patsubst %.asm,%.o,$(wildcard src/kernel/*.asm src/kernel/*/*.asm src/kernel/*/*/*.asm))
 
 all: boot.o minos.bin move grub 
