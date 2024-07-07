@@ -2,6 +2,10 @@
 #include "../utils/util.h"
 #include "../heap/heap.h"
 
+int stdout_index = 0;
+int stderr_index = 0;
+int stdin_index = 0;
+
 #define MAX_PRECISION (10)
 static const double rounders[MAX_PRECISION + 1] =
     {
@@ -119,4 +123,116 @@ char *ftoa(double f)
     }
     str[i] = 0;
     return str;
+}
+
+int printf(char *fmt, ...)
+{
+    char *start = fmt;
+    va_list ap;
+    va_start(ap, fmt);
+    int len = 0;
+    while (*fmt)
+    {
+        if (*fmt == '%')
+        {
+            ++fmt;
+            switch (*fmt)
+            {
+            case 's':
+            {
+                char *str = va_arg(ap, char *);
+                len += strlen(str);
+            }
+            break;
+            case 'd':
+            {
+                int x = va_arg(ap, int);
+                char *str = itoa(x);
+                len += strlen(str);
+                free(str);
+            }
+            break;
+            case 'f':
+            {
+                float x = va_arg(ap, double);
+                char *str = ftoa(x);
+                len += strlen(str);
+                free(str);
+            }
+            break;
+            }
+            ++fmt;
+        }
+        else
+        {
+            ++len;
+            ++fmt;
+        }
+    }
+    len += 2;
+    char *out = malloc(len);
+    fmt = start;
+    int idx = 0;
+    while (*fmt)
+    {
+        if (*fmt == '%')
+        {
+            ++fmt;
+            switch (*fmt)
+            {
+            case 's':
+            {
+                char *str = va_arg(ap, char *);
+                int l = strlen(str);
+
+                for (int i = 0; i < l; ++i)
+                {
+                    out[idx] = str[i];
+                    ++idx;
+                }
+            }
+            break;
+            case 'd':
+            {
+                int x = va_arg(ap, int);
+                char *str = itoa(x);
+                int l = strlen(str);
+
+                for (int i = 0; i < l; ++i)
+                {
+                    out[idx] = str[i];
+                    ++idx;
+                }
+            }
+            break;
+            case 'f':
+            {
+                float x = va_arg(ap, double);
+                char *str = ftoa(x);
+                int l = strlen(str);
+
+                for (int i = 0; i < l; ++i)
+                {
+                    out[idx] = str[i];
+                    ++idx;
+                }
+            }
+            break;
+            }
+            ++fmt;
+        }
+        else
+        {
+            out[idx] = *fmt;
+            ++fmt;
+            ++idx;
+        }
+    }
+    out[idx] = 0;
+    int ln = strlen(out);
+    for (int i = 0; i < ln; ++i)
+    {
+        stdout[stdout_index] = out[i];
+        ++stdout_index;
+    }
 }

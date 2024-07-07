@@ -8,6 +8,10 @@ extern char *stdout;
 extern char *stdin;
 extern char *stderr;
 
+extern int stdout_index;
+extern int stderr_index;
+extern int stdin_index;
+
 // typedef struct _iobuf
 // {
 //     char *_ptr;
@@ -25,7 +29,7 @@ extern char *stderr;
 char *itoa(int x);
 
 int fprintf(char *stream, const char *format, ...);
-int printf(const char *format, ...);
+int printf(char *format, ...);
 int sprintf(char *str, const char *format, ...);
 char *ftoa(double f);
 char *itoa(int x);

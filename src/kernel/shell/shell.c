@@ -103,8 +103,35 @@ shell_command parse_command(char *cmd)
     return out;
 }
 
+void shell_putc(char c)
+{
+    if (c == '\n')
+    {
+        cursor_x = 0;
+        cursor_y++;
+        return;
+    }
+    screen_buffer[cursor_x + (cursor_y * TXT_W)] = c;
+    ++cursor_x;
+    if (cursor_x > TXT_W)
+    {
+        cursor_x = 0;
+        cursor_y++;
+    }
+}
+
+void stdout_flush()
+{
+    for (int i = 0; i < stdout_index; ++i)
+    {
+        shell_putc(stdout[i]);
+    }
+    stdout_index = 0;
+}
+
 void update_shell()
 {
+    stdout_flush();
 }
 
 void render_shell()
