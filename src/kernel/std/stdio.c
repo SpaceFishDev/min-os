@@ -125,6 +125,38 @@ char *ftoa(double f)
     return str;
 }
 
+void putc(char c)
+{
+    stdout[stdout_index] = c;
+    ++stdout_index;
+}
+char getc()
+{
+    if (!stdin_index)
+        return 0;
+    return stdin[stdin_index--];
+}
+
+char *gets()
+{
+    int len = 0;
+    for (int i = 0; i < stdin_index; ++i)
+    {
+        if (stdin[i] == '\n')
+        {
+            break;
+        }
+        ++len;
+    }
+    char *str = malloc(len + 1);
+    for (int i = 0; i < len; ++i)
+    {
+        str[i] = stdin[i];
+    }
+    str[len] = 0;
+    return str; // remember to malloc :)
+}
+
 int printf(char *fmt, ...)
 {
     char *start = fmt;

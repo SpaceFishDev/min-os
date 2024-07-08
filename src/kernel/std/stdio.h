@@ -33,4 +33,7 @@ int printf(char *format, ...);
 int sprintf(char *str, const char *format, ...);
 char *ftoa(double f);
 char *itoa(int x);
+void putc(char c);
+char getc();
+char *gets();
 #endif

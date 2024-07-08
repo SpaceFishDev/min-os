@@ -64,7 +64,8 @@ void kernel_main(multiboot_info *mi)
     init_shell();
     int sync = get_timer_tick(); // make sure its synced with frame updates (I doubt this works but worth trying)
     int updates = 0;
-    printf("%d\n", 11);
+    // printf("%d\n", 11);
+
     while (1)
     {
         int time_cur = get_timer_tick();

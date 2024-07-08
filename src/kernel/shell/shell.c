@@ -9,6 +9,7 @@ char *screen_buffer;
 #define TXT_W ((VGA_W) / 9)
 #define TXT_H (((VGA_H) / 9) - 1)
 int terminal_col = 15;
+bool print_stdin = true;
 
 int cursor_x, cursor_y;
 char *command_buffer;
@@ -122,6 +123,12 @@ void shell_putc(char c)
 int last_stdout_idx = 0;
 
 int shell_scroll = 0;
+bool endl = false;
+
+void set_endl(bool x)
+{
+    endl = x;
+}
 
 void stdout_flush()
 {
@@ -132,7 +139,7 @@ void stdout_flush()
     }
     last_stdout_idx = stdout_index;
     stdout_index = 0;
-    if (printed)
+    if (printed && endl)
     {
         cursor_y++;
         cursor_x = 0;
@@ -157,6 +164,16 @@ void swap_lines(int y1, int y2)
 
 void update_shell()
 {
+    char c = poll_keyboard();
+    if (c)
+    {
+        stdin[stdin_index] = c;
+        ++stdin_index;
+        if (print_stdin)
+        {
+            putc(c);
+        }
+    }
     stdout_flush();
     if (cursor_y > TXT_H)
     {
