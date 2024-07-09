@@ -137,17 +137,47 @@ char getc()
     return stdin[stdin_index--];
 }
 
-char *gets()
+char *getline()
 {
-    int len = 0;
-    for (int i = 0; i < stdin_index; ++i)
+    bool found_endl = false;
+
+    int cnt = 0;
+    int ln = 0;
+    int x = 0;
+    for (x = stdin_index; x > 0; --x)
     {
-        if (stdin[i] == '\n')
+        if (stdin[x] == '\n')
+        {
+            ++cnt;
+        }
+        if (cnt == 3)
+        {
+            found_endl = true;
+            break;
+        }
+        ++ln;
+    }
+    if (!found_endl)
+    {
+        return 0;
+    }
+    int i = 0;
+    printf("x: %d  stdin: %d\n", x + 1, stdin_index);
+
+    for (int z = x + 1; z < ln + x; ++z)
+    {
+        if (stdin[z] == '\n')
         {
             break;
         }
-        ++len;
+        printf("hi %c\n", stdin[z]);
     }
+    return "test";
+}
+
+char *gets()
+{
+    int len = stdin_index;
     char *str = malloc(len + 1);
     for (int i = 0; i < len; ++i)
     {
@@ -196,6 +226,11 @@ int printf(char *fmt, ...)
                 free(str);
             }
             break;
+            case 'c':
+            {
+                ++len;
+            }
+            break;
             }
             ++fmt;
         }
@@ -230,6 +265,12 @@ int printf(char *fmt, ...)
                 }
             }
             break;
+            case 'c':
+            {
+                char c = va_arg(ap, char);
+                out[idx] = c;
+                ++idx;
+            }
             case 'd':
             {
                 int x = va_arg(ap, int);
@@ -274,4 +315,20 @@ int printf(char *fmt, ...)
         ++stdout_index;
     }
     free(out);
+}
+bool strcmp(char *a, char *b)
+{
+    if (strlen(a) != strlen(b))
+    {
+        return false;
+    }
+    while (*a && *b)
+    {
+        if (*a != *b)
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

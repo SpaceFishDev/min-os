@@ -11,7 +11,7 @@ extern char *stderr;
 extern int stdout_index;
 extern int stderr_index;
 extern int stdin_index;
-
+#include "../utils/util.h"
 // typedef struct _iobuf
 // {
 //     char *_ptr;
@@ -36,4 +36,6 @@ char *itoa(int x);
 void putc(char c);
 char getc();
 char *gets();
+char *getline();
+bool strcmp(char *a, char *b);
 #endif
