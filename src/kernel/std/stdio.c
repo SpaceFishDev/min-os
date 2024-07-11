@@ -30,6 +30,7 @@ char *itoa(int x)
         char *ret = malloc(2);
         ret[0] = '0';
         ret[1] = 0;
+        return ret;
     }
     int z = x;
     bool negative = false;
