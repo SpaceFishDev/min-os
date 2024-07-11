@@ -328,6 +328,8 @@ bool strcmp(char *a, char *b)
         {
             return false;
         }
+        ++a;
+        ++b;
     }
 
     return true;

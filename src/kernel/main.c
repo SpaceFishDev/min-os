@@ -69,7 +69,7 @@ void kernel_main(multiboot_info *mi)
     {
 
         int time_cur = get_timer_tick();
-        if (time_cur == sync + 1)
+        if (time_cur > sync)
         {
             update_shell();
             render_shell();

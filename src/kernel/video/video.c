@@ -126,7 +126,13 @@ void clear_screen()
         video_buffer[i] = 0;
     }
 }
-
+void clear_back_buffer()
+{
+    for (int i = 0; i < 64000; i++)
+    {
+        BufferB[i] = 0;
+    }
+}
 void swap_buffers()
 {
     for (int i = 0; i < 64000; i++)
@@ -171,6 +177,17 @@ void render_character(char c, int x_off, int y_off, char col)
                 put_pixel(x + x_off, y + y_off, col);
             }
         }
+    }
+}
+
+void render_string(char *str, int x_off, int y_off, char col)
+{
+    int x = x_off;
+    while (*str)
+    {
+        render_character(*str, x, y_off, col);
+        ++str;
+        x += 9;
     }
 }
 

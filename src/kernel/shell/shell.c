@@ -18,8 +18,22 @@ char *stdout;
 char *stdin;
 char *stderr;
 
+typedef void (*command_handler_t)(int argc, char **argv);
+command_handler_t *command_handlers;
+
+enum command_table
+{
+    CMD_PONG,
+    NUM_CMD,
+};
+
+extern command_handler_t pong(int argc, char **argv);
+
 void init_shell()
 {
+
+    command_handlers = malloc(sizeof(command_handlers) * NUM_CMD);
+    command_handlers[CMD_PONG] = pong;
     command_buffer = malloc(TXT_W);
     cursor_x = 2; // resets to 2 to allow for '> '
     cursor_y = 0;
@@ -172,6 +186,12 @@ bool shell_enable = true;
 
 void disable_shell()
 {
+    shell_enable = false;
+}
+
+void enable_shell()
+{
+    shell_enable = true;
 }
 
 void set_endl(bool x)
@@ -216,6 +236,10 @@ int cmd_idx = 0;
 
 void update_shell()
 {
+    if (!shell_enable)
+    {
+        return;
+    }
     char c = poll_keyboard();
 
     if (c)
@@ -251,12 +275,35 @@ void update_shell()
             cmd_str[i] = cmd_buf[i];
         }
         cmd_str[len] = 0;
-        printf("test: %s\n", cmd_str);
         shell_command cmd = parse_command(cmd_str);
-        printf("CMD: %s\n", cmd.cmd);
-        for (int i = 0; i < cmd.arg_cnt; ++i)
+        if (strcmp(cmd.cmd, "pong"))
         {
-            printf("ARG: %s\n", cmd.arguments[i]);
+            pong(cmd.arg_cnt, cmd.arguments);
+            putc('\n');
+            putc('>');
+            putc(' ');
+        }
+        if (strcmp(cmd.cmd, "clear"))
+        {
+            for (int i = 0; i < TXT_W * TXT_H; ++i)
+            {
+                screen_buffer[i] = 0;
+            }
+
+            putc('>');
+            putc(' ');
+            cursor_x = 2;
+            cursor_y = 0;
+            clear_back_buffer();
+            free(cmd_str);
+            free_shellcmd(cmd);
+            int x = cmd_idx;
+            cmd_idx = 0;
+            for (; x > 0; --x)
+            {
+                cmd_buf[x] = 0;
+            }
+            return;
         }
         free(cmd_str);
         free_shellcmd(cmd);
@@ -276,6 +323,10 @@ void update_shell()
 
 void render_shell()
 {
+    if (!shell_enable)
+    {
+        return;
+    }
     for (int x = 0; x < TXT_W; ++x)
     {
         for (int y = 0; y < TXT_H; ++y)
