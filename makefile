@@ -34,3 +34,5 @@ clean:
 	rm $(KERN_ASM_OBJS)
 	rm *.o
 	rm iso/boot/minos.bin
+	rm *.bin
+	rm *.iso
