@@ -7,7 +7,7 @@
 char *screen_buffer;
 
 #define TXT_W ((VGA_W) / 9)
-#define TXT_H (((VGA_H) / 9) - 1)
+#define TXT_H (((VGA_H) / 10) - 1)
 int terminal_col = 15;
 bool print_stdin = true;
 
@@ -35,15 +35,13 @@ void init_shell()
     command_handlers = malloc(sizeof(command_handlers) * NUM_CMD);
     command_handlers[CMD_PONG] = pong;
     command_buffer = malloc(TXT_W);
-    cursor_x = 2; // resets to 2 to allow for '> '
-    cursor_y = 0;
     screen_buffer = malloc(TXT_H * TXT_W * 8);
     for (int i = 0; i < TXT_H * TXT_W; ++i)
     {
         screen_buffer[i] = 0;
     }
-    draw_char('>', 0, 0);
-    draw_char(' ', 1, 0);
+    shell_putc('>');
+    shell_putc(' ');
     stdout = malloc(8 * 1024);
     stdin = malloc(8 * 1024);
     stderr = malloc(8 * 1024);
@@ -212,8 +210,8 @@ void stdout_flush()
     {
         cursor_y++;
         cursor_x = 0;
-        shell_putc('>');
-        shell_putc(' ');
+        putc('>');
+        putc(' ');
     }
 }
 
@@ -241,17 +239,6 @@ void update_shell()
         return;
     }
     char c = poll_keyboard();
-
-    if (c)
-    {
-        stdin[stdin_index] = c;
-        cmd_buf[cmd_idx++] = c;
-        ++stdin_index;
-        if (print_stdin)
-        {
-            putc(c);
-        }
-    }
     if (c == '\n')
     {
         char *cmd_str;
@@ -279,9 +266,6 @@ void update_shell()
         if (strcmp(cmd.cmd, "pong"))
         {
             pong(cmd.arg_cnt, cmd.arguments);
-            putc('\n');
-            putc('>');
-            putc(' ');
         }
         if (strcmp(cmd.cmd, "clear"))
         {
@@ -292,7 +276,7 @@ void update_shell()
 
             putc('>');
             putc(' ');
-            cursor_x = 2;
+            cursor_x = 0;
             cursor_y = 0;
             clear_back_buffer();
             free(cmd_str);
@@ -313,7 +297,35 @@ void update_shell()
         {
             cmd_buf[x] = 0;
         }
+        putc('\n');
+        putc('>');
+        putc(' ');
     }
+    else if (c == BS)
+    {
+
+        for (int i = cursor_x - 1; i < TXT_W; ++i)
+        {
+            screen_buffer[i] = screen_buffer[i + 1];
+            command_buffer[i] = command_buffer[i + 1];
+            if (screen_buffer[i + 1] == 0)
+            {
+                break;
+            }
+        }
+        --cursor_x;
+    }
+    else if (c)
+    {
+        stdin[stdin_index] = c;
+        cmd_buf[cmd_idx++] = c;
+        ++stdin_index;
+        if (print_stdin)
+        {
+            putc(c);
+        }
+    }
+
     stdout_flush();
     if (cursor_y > TXT_H)
     {
@@ -327,12 +339,13 @@ void render_shell()
     {
         return;
     }
+    clear_back_buffer();
     for (int x = 0; x < TXT_W; ++x)
     {
         for (int y = 0; y < TXT_H; ++y)
         {
             int vga_x = x * 9;
-            int vga_y = (y * 9) + 9;
+            int vga_y = (y * 10) + 10;
             if (vga_y > 0)
             {
                 render_character(screen_buffer[x + (y * TXT_W)], vga_x, vga_y, terminal_col);

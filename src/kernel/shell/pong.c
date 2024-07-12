@@ -2,7 +2,7 @@
 
 #include "../keyboard/keyboard.h"
 #include "../std/stdio.h"
-
+#include "../heap/heap.h"
 float paddle_1_x = 10;
 float paddle_1_y = 90;
 float paddle_2_x = 310;
@@ -43,6 +43,7 @@ void pong(int argc, char **argv)
 
         render_string(score_1_str, 140, 10, 15);
         render_string(score_2_str, 160, 10, 15);
+        render_string("Press q or escape to quit.", 0, 190, 15);
 
         char c = poll_keyboard();
         if (c == ESC || c == 'q')
@@ -53,21 +54,25 @@ void pong(int argc, char **argv)
         {
             paddle_1_y -= 2;
             up_1 = true;
+            down_1 = false;
         }
         if (c == 'i')
         {
             paddle_2_y -= 2;
             up_2 = true;
+            down_2 = false;
         }
         if (c == 'k')
         {
             paddle_2_y += 2;
-            down_1 = true;
+            down_2 = true;
+            up_2 = false;
         }
         if (c == 's')
         {
             paddle_1_y += 2;
-            down_2 = true;
+            down_1 = true;
+            up_1 = false;
         }
         draw_paddle();
         put_pixel(ball_x, ball_y, 15);
@@ -79,7 +84,7 @@ void pong(int argc, char **argv)
             ball_x = 160;
             ball_y = 100;
             vy = 0;
-            score_2_str = itoa(score_1);
+            score_1_str = itoa(score_1);
         }
         if (ball_x <= 0)
         {
@@ -89,7 +94,7 @@ void pong(int argc, char **argv)
             vy = 0;
             score_2_str = itoa(score_2);
         }
-        if (ball_y <= 0 || ball_y >= 200)
+        if (ball_y <= 20 || ball_y >= 180)
         {
             vy = -vy;
         }
@@ -103,7 +108,7 @@ void pong(int argc, char **argv)
                     vy = -0.005;
                     up_2 = false;
                 }
-                else if (down_2)
+                if (down_2)
                 {
                     vy = 0.005;
                     down_2 = false;
@@ -120,7 +125,7 @@ void pong(int argc, char **argv)
                     vy = -0.005;
                     up_1 = false;
                 }
-                else if (down_1)
+                if (down_1)
                 {
                     vy = 0.005;
                     down_1 = false;
@@ -129,4 +134,16 @@ void pong(int argc, char **argv)
         }
         swap_buffers();
     }
+    free(score_1_str);
+    free(score_2_str);
+    ball_x = 160;
+    ball_y = 100;
+    paddle_1_x = 10;
+    paddle_1_y = 90;
+    paddle_2_x = 310;
+    paddle_2_y = 90;
+    score_1 = 0;
+    score_2 = 0;
+    clear_back_buffer();
+    clear_screen();
 }
