@@ -232,6 +232,69 @@ void swap_lines(int y1, int y2)
 char cmd_buf[1024];
 int cmd_idx = 0;
 
+void handle_command(char c)
+{
+    char *cmd_str;
+    int len = 0;
+    int cnt = 0;
+    for (int i = 0; i < cmd_idx; ++i)
+    {
+        if (cmd_buf[i] == '\n')
+        {
+            ++cnt;
+        }
+        if (cnt == 1)
+        {
+            break;
+        }
+        ++len;
+    }
+    cmd_str = malloc(len + 1);
+    for (int i = 0; i < len; ++i)
+    {
+        cmd_str[i] = cmd_buf[i];
+    }
+    cmd_str[len] = 0;
+    shell_command cmd = parse_command(cmd_str);
+    if (strcmp(cmd.cmd, "pong"))
+    {
+        pong(cmd.arg_cnt, cmd.arguments);
+    }
+    if (strcmp(cmd.cmd, "clear"))
+    {
+        for (int i = 0; i < TXT_W * TXT_H; ++i)
+        {
+            screen_buffer[i] = 0;
+        }
+
+        putc('>');
+        putc(' ');
+        cursor_x = 0;
+        cursor_y = 0;
+        clear_back_buffer();
+        free(cmd_str);
+        free_shellcmd(cmd);
+        int x = cmd_idx;
+        cmd_idx = 0;
+        for (; x > 0; --x)
+        {
+            cmd_buf[x] = 0;
+        }
+        return;
+    }
+    free(cmd_str);
+    free_shellcmd(cmd);
+    int x = cmd_idx;
+    cmd_idx = 0;
+    for (; x > 0; --x)
+    {
+        cmd_buf[x] = 0;
+    }
+    putc('\n');
+    putc('>');
+    putc(' ');
+}
+
 void update_shell()
 {
     if (!shell_enable)
@@ -241,79 +304,25 @@ void update_shell()
     char c = poll_keyboard();
     if (c == '\n')
     {
-        char *cmd_str;
-        int len = 0;
-        int cnt = 0;
-        for (int i = 0; i < cmd_idx; ++i)
-        {
-            if (cmd_buf[i] == '\n')
-            {
-                ++cnt;
-            }
-            if (cnt == 1)
-            {
-                break;
-            }
-            ++len;
-        }
-        cmd_str = malloc(len + 1);
-        for (int i = 0; i < len; ++i)
-        {
-            cmd_str[i] = cmd_buf[i];
-        }
-        cmd_str[len] = 0;
-        shell_command cmd = parse_command(cmd_str);
-        if (strcmp(cmd.cmd, "pong"))
-        {
-            pong(cmd.arg_cnt, cmd.arguments);
-        }
-        if (strcmp(cmd.cmd, "clear"))
-        {
-            for (int i = 0; i < TXT_W * TXT_H; ++i)
-            {
-                screen_buffer[i] = 0;
-            }
-
-            putc('>');
-            putc(' ');
-            cursor_x = 0;
-            cursor_y = 0;
-            clear_back_buffer();
-            free(cmd_str);
-            free_shellcmd(cmd);
-            int x = cmd_idx;
-            cmd_idx = 0;
-            for (; x > 0; --x)
-            {
-                cmd_buf[x] = 0;
-            }
-            return;
-        }
-        free(cmd_str);
-        free_shellcmd(cmd);
-        int x = cmd_idx;
-        cmd_idx = 0;
-        for (; x > 0; --x)
-        {
-            cmd_buf[x] = 0;
-        }
-        putc('\n');
-        putc('>');
-        putc(' ');
+        handle_command(c);
     }
     else if (c == BS)
     {
-
+        int j = cmd_idx - 1;
         for (int i = cursor_x - 1; i < TXT_W; ++i)
         {
-            screen_buffer[i] = screen_buffer[i + 1];
-            command_buffer[i] = command_buffer[i + 1];
+            screen_buffer[i + (cursor_y * TXT_W)] = screen_buffer[i + 1 + (cursor_y * TXT_W)];
+
+            cmd_buf[j] = cmd_buf[j + 1];
+
             if (screen_buffer[i + 1] == 0)
             {
                 break;
             }
+            ++cmd_idx;
         }
         --cursor_x;
+        --cmd_idx;
     }
     else if (c)
     {
